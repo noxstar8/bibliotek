@@ -12,6 +12,7 @@ import {
   isLibrarian,
   SIGNED_OUT,
 } from "@/lib/auth";
+import { addBook, type BookError, editBook, parseBook, removeBook } from "@/lib/books";
 import {
   createBorrower,
   DEMO_RESET_ENABLED,
@@ -19,7 +20,7 @@ import {
   resetDatabase,
 } from "@/lib/db";
 import { errorSlug } from "@/lib/errors";
-import type { RegisterState } from "@/lib/forms";
+import type { BookProblem, BookState, BookValues, RegisterState } from "@/lib/forms";
 import { borrowBook, registerReturn } from "@/lib/loans";
 import type { Role } from "@/lib/types";
 
@@ -29,6 +30,17 @@ function revalidateLoanViews(bookId?: string) {
   revalidatePath("/mine-laan");
   revalidatePath("/admin");
   if (bookId) revalidatePath(`/boker/${bookId}`);
+}
+
+/**
+ * Every screen that names a title, after the catalogue entry itself moved.
+ * Availability is only half of it now: the title, the author and the ISBN are
+ * rendered into the boklist, the loan tables and the detail page as well.
+ */
+function revalidateCatalogue(bookId: string) {
+  revalidateLoanViews(bookId);
+  revalidatePath("/admin/boker");
+  revalidatePath(`/admin/boker/${bookId}`);
 }
 
 /** Lends the book on the detail page to whoever is browsing. */
@@ -83,9 +95,113 @@ export async function resetDemoDataAction() {
   // Every title at once — a reset changes availability across the catalogue,
   // not just on the one book a borrow would have touched.
   revalidatePath("/boker/[id]", "page");
+  revalidatePath("/admin/boker");
+  revalidatePath("/admin/boker/[id]", "page");
   revalidatePath("/admin/brukere");
   revalidatePath("/logg-inn");
   redirect("/admin/innstillinger?tilbakestilt=1");
+}
+
+/* ------------------------------------------------------------ katalogen --- */
+
+/** The five catalogue fields, straight off the form and not yet parsed. */
+function bookValues(formData: FormData): BookValues {
+  return {
+    title: String(formData.get("title") ?? ""),
+    author: String(formData.get("author") ?? ""),
+    isbn: String(formData.get("isbn") ?? ""),
+    year: String(formData.get("year") ?? ""),
+    copies: String(formData.get("copies") ?? ""),
+  };
+}
+
+/**
+ * Where a refused write lands in the form. Two of these belong to a field the
+ * librarian can put right on the spot, so they are shown under it; a title that
+ * disappeared from under them belongs to no field, and goes above them all.
+ */
+const bookProblems: Record<BookError, BookProblem> = {
+  "isbn-taken": {
+    field: "isbn",
+    message: "En annen bok i katalogen har allerede dette ISBN-et.",
+  },
+  "copies-below-on-loan": {
+    field: "copies",
+    message:
+      "Det er flere eksemplarer ute på lån enn dette. Registrer retur før du setter ned antallet.",
+  },
+  "book-on-loan": {
+    field: "form",
+    message:
+      "Eksemplarer av boken er ute på lån, så den kan ikke tas ut av katalogen ennå.",
+  },
+  "book-not-found": {
+    field: "form",
+    message:
+      "Boken står ikke i katalogen lenger. Noen kan ha slettet den mens du redigerte.",
+  },
+};
+
+/** Puts a new title in the catalogue. */
+export async function createBookAction(
+  _previous: BookState,
+  formData: FormData
+): Promise<BookState> {
+  const actor = await getCurrentBorrower();
+  if (!actor || !isLibrarian(actor)) redirect("/logg-inn");
+
+  const values = bookValues(formData);
+  const parsed = parseBook(values);
+  if (!parsed.ok) return { values, error: parsed.problem };
+
+  const result = await addBook(parsed.book);
+  if (!result.ok) return { values, error: bookProblems[result.error] };
+
+  revalidateCatalogue(result.book.id);
+  redirect(`/admin/boker?ny=${encodeURIComponent(result.book.id)}`);
+}
+
+/** Corrects an entry that is already in the catalogue. */
+export async function updateBookAction(
+  _previous: BookState,
+  formData: FormData
+): Promise<BookState> {
+  const actor = await getCurrentBorrower();
+  if (!actor || !isLibrarian(actor)) redirect("/logg-inn");
+
+  const id = String(formData.get("bookId") ?? "");
+  const values = bookValues(formData);
+  const parsed = parseBook(values);
+  if (!parsed.ok) return { values, error: parsed.problem };
+
+  const result = await editBook(id, parsed.book);
+  if (!result.ok) return { values, error: bookProblems[result.error] };
+
+  revalidateCatalogue(id);
+  redirect(`/admin/boker/${encodeURIComponent(id)}?lagret=1`);
+}
+
+/**
+ * Takes a title out of the catalogue for good. Confirmed in a dialog before it
+ * gets here, and refused outright while copies are still out on loan.
+ */
+export async function deleteBookAction(formData: FormData) {
+  const actor = await getCurrentBorrower();
+  if (!actor || !isLibrarian(actor)) redirect("/logg-inn");
+
+  const id = String(formData.get("bookId") ?? "");
+  const result = await removeBook(id);
+
+  if (!result.ok) {
+    // Back to the page the librarian was on, so the book they were looking at
+    // is still in front of them when the reason turns up.
+    redirect(
+      `/admin/boker/${encodeURIComponent(id)}?feil=${errorSlug(result.error)}`
+    );
+  }
+
+  revalidateCatalogue(id);
+  redirect(`/admin/boker?slettet=${encodeURIComponent(result.book.title)}`);
 }
 
 /* ----------------------------------------------------------------- who am I --- */

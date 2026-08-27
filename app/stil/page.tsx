@@ -17,6 +17,26 @@ import {
 } from "@hugeicons/core-free-icons";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -50,6 +70,14 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Input } from "@/components/ui/input";
 import {
   InputGroup,
@@ -670,6 +698,82 @@ export default function StylePage() {
               </Field>
             </CardContent>
           </Card>
+        </Section>
+
+        <Separator />
+
+        {/* 9 — Trail and confirmation */}
+        <Section number="09" title="Brødsmuler og bekreftelse">
+          <p className="mb-6 max-w-2xl text-sm/relaxed text-muted-foreground">
+            En side som ligger under en av hovedvisningene bærer sporet tilbake
+            selv. Handlinger som ikke kan angres, ligger i en dempet rad nederst
+            på siden og spør én gang før de utføres.
+          </p>
+
+          <Breadcrumb className="mb-8">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Administrasjon</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="#">Bøker</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Sult</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+
+          <AlertDialog>
+            <Item variant="outline" className="border-destructive/25">
+              <ItemMedia
+                variant="icon"
+                className="size-9 rounded-xl bg-destructive/10 text-destructive"
+              >
+                <HugeiconsIcon icon={AlertCircleIcon} strokeWidth={2} />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>Slett boken</ItemTitle>
+                <ItemDescription>
+                  Tittelen forsvinner fra katalogen og kan ikke lånes ut igjen.
+                  Handlingen kan ikke angres.
+                </ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <AlertDialogTrigger
+                  className={buttonVariants({
+                    variant: "destructive",
+                    size: "sm",
+                  })}
+                >
+                  <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
+                  Slett
+                </AlertDialogTrigger>
+              </ItemActions>
+            </Item>
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogMedia className="bg-destructive/10 text-destructive">
+                  <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
+                </AlertDialogMedia>
+                <AlertDialogTitle>Slette «Sult»?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Boken tas ut av katalogen for godt. Lånehistorikken blir
+                  stående. Handlingen kan ikke angres.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                <AlertDialogAction variant="destructive">
+                  <HugeiconsIcon icon={Delete02Icon} strokeWidth={2} />
+                  Slett boken
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </Section>
       </main>
     </div>

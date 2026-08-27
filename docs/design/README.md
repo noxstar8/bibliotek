@@ -192,6 +192,10 @@ where the surface begins and ends; a rule inside it just chops the surface up.
 - Navigation only lists what the current user may open — a plain borrower never
   sees the administration link. A page they reach anyway explains why, and
   offers the way across, rather than 404-ing.
+- A page that sits **below** one of the nav entries — a single record opened for
+  editing — carries a `Breadcrumbs` trail instead of the tab row above it. A tab
+  row can only say which view you are in, and once you are a level down it can
+  no longer say that. Last step is where you are, and is not a link.
 
 ## Data display
 
@@ -269,6 +273,17 @@ Never leave these to chance — every list and every fetch needs all three.
 - **Status** — `Badge`: `default` for positive/available, `secondary` for
   neutral/in-progress, `destructive` for overdue/failed. Badges always sit
   beside explanatory text; colour is never the only signal.
+- **Confirmation** — anything irreversible asks once, in an `AlertDialog`: a
+  tinted `AlertDialogMedia`, a title naming the record («Slette «Sult»?»), a
+  description saying what survives and what does not, then `AlertDialogCancel`
+  before a `destructive` `AlertDialogAction`. Style the trigger with
+  `buttonVariants`, never `render={<Button/>}` — the same nested-`data-slot`
+  hydration trap as the dropdown trigger. The submitting `<form>` goes *outside*
+  the dialog with the action pointing at it via the native `form` attribute; the
+  popup is portalled, so a form inside it is nowhere near the button in the DOM.
+  When the action is not available at all — a title with copies still out on
+  loan — the row says why and offers no button, rather than offering one that
+  fails.
 - **Role** — also a `Badge`, but `outline`. A role is a fixed fact about an
   account, not a state that moves, so it stays out of the status colours.
 

@@ -7,11 +7,18 @@ import { buttonVariants } from "@/components/ui/button";
 
 const views = [
   { href: "/admin", label: "Aktive lån" },
+  { href: "/admin/boker", label: "Bøker" },
   { href: "/admin/brukere", label: "Brukere" },
   { href: "/admin/innstillinger", label: "Innstillinger" },
 ];
 
-/** The two halves of the desk work, switched between without leaving the area. */
+/**
+ * The desk views, switched between without leaving the administration.
+ *
+ * Only the top of each view is listed. A page below one of them — a single book
+ * being edited, say — carries breadcrumbs instead, because a tab row cannot say
+ * where you are once you are one level down.
+ */
 export function AdminNav() {
   const pathname = usePathname();
 

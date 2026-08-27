@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { isActive } from "@/lib/availability";
+import { sameIsbn } from "@/lib/isbn";
 import type { Book, Borrower, Database, Loan } from "@/lib/types";
 
 /**
@@ -148,6 +149,82 @@ export async function createBorrower(input: NewBorrower): Promise<Borrower | nul
     database.borrowers.push(borrower);
     await write(database);
     return borrower;
+  });
+}
+
+export type NewBook = Omit<Book, "id">;
+
+/**
+ * Puts a title in the catalogue. Returns `null` when the ISBN already belongs
+ * to another title — checked inside the queued write, so two entries of the
+ * same book cannot slip past one another.
+ */
+export async function createBook(input: NewBook): Promise<Book | null> {
+  return enqueue(async () => {
+    const database = await read();
+    if (database.books.some((book) => sameIsbn(book.isbn, input.isbn))) return null;
+
+    // "bok-", not "book-": this id lands in a URL once the title is saved, and
+    // URLs in this app are Norwegian.
+    const book: Book = { id: `bok-${randomUUID()}`, ...input };
+
+    database.books.push(book);
+    await write(database);
+    return book;
+  });
+}
+
+/**
+ * Rewrites the catalogue entry for `id` and returns it. `null` when no title
+ * has that id, or when `precondition` turns the change down.
+ *
+ * The precondition sees the whole database alongside the entry as it stands,
+ * because the rules worth enforcing here are about the state around the record
+ * — "a copy cannot be struck off the catalogue while it is out on loan" — and
+ * that state can change between reading the form and writing it back.
+ */
+export async function updateBook(
+  id: string,
+  changes: NewBook,
+  precondition: (database: Database, book: Book) => boolean = () => true
+): Promise<Book | null> {
+  return enqueue(async () => {
+    const database = await read();
+    const book = database.books.find((candidate) => candidate.id === id);
+
+    if (!book) return null;
+    if (!precondition(database, book)) return null;
+
+    Object.assign(book, changes);
+    await write(database);
+    return book;
+  });
+}
+
+/**
+ * Takes a title out of the catalogue and returns the entry that was removed.
+ * `null` when no title has that id, or when `precondition` turns it down.
+ *
+ * Loans are deliberately left alone. A loan is the record of something that
+ * happened, and it stays true after the title leaves the collection — every
+ * screen that shows one already copes with the book being gone.
+ */
+export async function deleteBook(
+  id: string,
+  precondition: (database: Database, book: Book) => boolean = () => true
+): Promise<Book | null> {
+  return enqueue(async () => {
+    const database = await read();
+    const index = database.books.findIndex((candidate) => candidate.id === id);
+
+    if (index === -1) return null;
+
+    const book = database.books[index];
+    if (!precondition(database, book)) return null;
+
+    database.books.splice(index, 1);
+    await write(database);
+    return book;
   });
 }
 
