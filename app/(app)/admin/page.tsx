@@ -74,7 +74,10 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
     );
   }
 
-  const [loans, { feil }] = await Promise.all([listActiveLoans(), searchParams]);
+  const [loans, { feil, "satt-av": setAside }] = await Promise.all([
+    listActiveLoans(),
+    searchParams,
+  ]);
   const error = describeError(feil);
   const overdue = loans.filter((loan) => loan.status === "overdue").length;
 
@@ -91,6 +94,21 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
           <HugeiconsIcon icon={AlertCircleIcon} strokeWidth={2} />
           <AlertTitle>{error.title}</AlertTitle>
           <AlertDescription>{error.description}</AlertDescription>
+        </Alert>
+      ) : null}
+
+      {typeof setAside === "string" ? (
+        <Alert className="mb-6">
+          <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} />
+          <AlertTitle>Eksemplaret er satt av til {setAside}</AlertTitle>
+          <AlertDescription>
+            Boken skal på hentehyllen, ikke tilbake i hyllen — den kan ikke lånes
+            ut til andre. Registrer utleveringen under{" "}
+            <Link href="/admin/reservasjoner" className="underline">
+              Reservasjoner
+            </Link>{" "}
+            når {setAside} kommer i skranken.
+          </AlertDescription>
         </Alert>
       ) : null}
 

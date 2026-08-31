@@ -21,14 +21,26 @@ import {
 } from "@/lib/db";
 import { errorSlug } from "@/lib/errors";
 import type { BookProblem, BookState, BookValues, RegisterState } from "@/lib/forms";
-import { borrowBook, registerReturn } from "@/lib/loans";
+import {
+  borrowBook,
+  cancelReservation,
+  collectReservation,
+  registerReturn,
+  reserveBook,
+} from "@/lib/loans";
 import type { Role } from "@/lib/types";
 
-/** Every screen that shows a loan or an availability count. */
+/**
+ * Every screen that shows a loan, a reservation or an availability count.
+ *
+ * The queue belongs in here rather than in a helper of its own: a return now
+ * moves it too, so every caller needs it.
+ */
 function revalidateLoanViews(bookId?: string) {
   revalidatePath("/");
   revalidatePath("/mine-laan");
   revalidatePath("/admin");
+  revalidatePath("/admin/reservasjoner");
   if (bookId) revalidatePath(`/boker/${bookId}`);
 }
 
@@ -59,7 +71,13 @@ export async function borrowBookAction(formData: FormData) {
   redirect("/mine-laan");
 }
 
-/** Takes a book back in from the administration screen. */
+/**
+ * Takes a book back in from the administration screen.
+ *
+ * If somebody was waiting for the title, the copy has just been put aside for
+ * them — the librarian is told, because that copy now belongs on the pickup
+ * shelf rather than back in the stacks.
+ */
 export async function returnLoanAction(formData: FormData) {
   const actor = await getCurrentBorrower();
   if (!actor || !isLibrarian(actor)) redirect("/logg-inn");
@@ -72,7 +90,88 @@ export async function returnLoanAction(formData: FormData) {
   }
 
   revalidateLoanViews(result.loan.bookId);
-  redirect("/admin");
+
+  const waiting = result.promoted.at(0);
+  if (!waiting) redirect("/admin");
+
+  const borrower = await getBorrower(waiting.borrowerId);
+  redirect(`/admin?satt-av=${encodeURIComponent(borrower?.name ?? "neste i køen")}`);
+}
+
+/* ------------------------------------------------------- reservasjoner --- */
+
+/** Puts the reader in the queue for a title where every copy is out. */
+export async function reserveBookAction(formData: FormData) {
+  const bookId = String(formData.get("bookId") ?? "");
+  const title = String(formData.get("title") ?? "");
+  const borrower = await getCurrentBorrower();
+  if (!borrower) redirect("/logg-inn");
+
+  const result = await reserveBook(bookId, borrower.id);
+
+  if (!result.ok) {
+    redirect(`/boker/${encodeURIComponent(bookId)}?feil=${errorSlug(result.error)}`);
+  }
+
+  revalidateLoanViews(bookId);
+  redirect(`/mine-laan?reservert=${encodeURIComponent(title)}`);
+}
+
+/**
+ * The borrower giving up their own place in the queue. The cancel is refused
+ * outright for anyone else's reservation, so a guessed id gets nowhere.
+ */
+export async function cancelReservationAction(formData: FormData) {
+  const borrower = await getCurrentBorrower();
+  if (!borrower) redirect("/logg-inn");
+
+  const id = String(formData.get("reservationId") ?? "");
+  const title = String(formData.get("title") ?? "");
+  const result = await cancelReservation(id, borrower.id);
+
+  if (!result.ok) {
+    redirect(`/mine-laan?feil=${errorSlug(result.error)}`);
+  }
+
+  revalidateLoanViews(result.reservation.bookId);
+  redirect(`/mine-laan?avbestilt=${encodeURIComponent(title)}`);
+}
+
+/**
+ * A librarian clearing an entry out of the queue. Passes `null` as the owner,
+ * which is what lets this one touch somebody else's reservation.
+ */
+export async function deleteReservationAction(formData: FormData) {
+  const actor = await getCurrentBorrower();
+  if (!actor || !isLibrarian(actor)) redirect("/logg-inn");
+
+  const id = String(formData.get("reservationId") ?? "");
+  const title = String(formData.get("title") ?? "");
+  const result = await cancelReservation(id, null);
+
+  if (!result.ok) {
+    redirect(`/admin/reservasjoner?feil=${errorSlug(result.error)}`);
+  }
+
+  revalidateLoanViews(result.reservation.bookId);
+  redirect(`/admin/reservasjoner?slettet=${encodeURIComponent(title)}`);
+}
+
+/** The handover at the desk: a reserved copy becomes an ordinary loan. */
+export async function collectReservationAction(formData: FormData) {
+  const actor = await getCurrentBorrower();
+  if (!actor || !isLibrarian(actor)) redirect("/logg-inn");
+
+  const id = String(formData.get("reservationId") ?? "");
+  const name = String(formData.get("borrowerName") ?? "");
+  const result = await collectReservation(id);
+
+  if (!result.ok) {
+    redirect(`/admin/reservasjoner?feil=${errorSlug(result.error)}`);
+  }
+
+  revalidateLoanViews(result.loan.bookId);
+  redirect(`/admin/reservasjoner?utlevert=${encodeURIComponent(name)}`);
 }
 
 /**
@@ -128,7 +227,7 @@ const bookProblems: Record<BookError, BookProblem> = {
   "copies-below-on-loan": {
     field: "copies",
     message:
-      "Det er flere eksemplarer ute på lån enn dette. Registrer retur før du setter ned antallet.",
+      "Flere eksemplarer er ute på lån eller satt av til henting enn dette. Registrer retur eller utlevering før du setter ned antallet.",
   },
   "book-on-loan": {
     field: "form",

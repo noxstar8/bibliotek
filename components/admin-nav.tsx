@@ -7,6 +7,9 @@ import { buttonVariants } from "@/components/ui/button";
 
 const views = [
   { href: "/admin", label: "Aktive lån" },
+  // Next to the loans, not last: lending out and taking in are the same desk
+  // work, and the queue is where a returned copy goes.
+  { href: "/admin/reservasjoner", label: "Reservasjoner" },
   { href: "/admin/boker", label: "Bøker" },
   { href: "/admin/brukere", label: "Brukere" },
   { href: "/admin/innstillinger", label: "Innstillinger" },

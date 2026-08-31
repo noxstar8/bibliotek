@@ -4,6 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowRight01Icon,
   Book02Icon,
+  Bookmark02Icon,
   BookOpen01Icon,
   MoreVerticalIcon,
 } from "@hugeicons/core-free-icons";
@@ -39,7 +40,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { borrowBookAction } from "@/lib/actions";
+import { borrowBookAction, reserveBookAction } from "@/lib/actions";
 import { getCurrentBorrower } from "@/lib/auth";
 import { listBooks } from "@/lib/loans";
 
@@ -110,23 +111,38 @@ export default async function BooksPage() {
                       {book.available} av {book.copies}
                     </TableCell>
                     <TableCell className="py-3">
-                      {book.available > 0 ? (
-                        <Badge>Tilgjengelig</Badge>
-                      ) : (
-                        <Badge variant="secondary">Utlånt</Badge>
-                      )}
+                      <div className="flex flex-col items-start gap-1.5 leading-snug">
+                        {book.available > 0 ? (
+                          <Badge>Tilgjengelig</Badge>
+                        ) : (
+                          <Badge variant="secondary">Utlånt</Badge>
+                        )}
+                        {book.reserved > 0 ? (
+                          <span className="text-muted-foreground tabular-nums">
+                            {book.reserved} i kø
+                          </span>
+                        ) : null}
+                      </div>
                     </TableCell>
                     <TableCell className="py-3 pr-(--card-spacing) text-right">
-                      {/* The form lives outside the popup. A menu closes the
+                      {/* The forms live outside the popup. A menu closes the
                           instant an item is pressed, and a form torn out of the
                           tree mid-submit never completes — so the item points at
-                          this one with the native `form` attribute. */}
+                          one of these with the native `form` attribute. */}
                       <form
                         id={`laan-${book.id}`}
                         action={borrowBookAction}
                         className="hidden"
                       >
                         <input type="hidden" name="bookId" value={book.id} />
+                      </form>
+                      <form
+                        id={`reserver-${book.id}`}
+                        action={reserveBookAction}
+                        className="hidden"
+                      >
+                        <input type="hidden" name="bookId" value={book.id} />
+                        <input type="hidden" name="title" value={book.title} />
                       </form>
                       <DropdownMenu>
                         <DropdownMenuTrigger
@@ -142,10 +158,9 @@ export default async function BooksPage() {
                           />
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-56">
-                          {viewer ? (
+                          {viewer && book.available > 0 ? (
                             <DropdownMenuItem
                               nativeButton
-                              disabled={book.available === 0}
                               render={
                                 <button type="submit" form={`laan-${book.id}`} />
                               }
@@ -155,6 +170,24 @@ export default async function BooksPage() {
                                 strokeWidth={2}
                               />
                               Lån boken
+                            </DropdownMenuItem>
+                          ) : viewer ? (
+                            // Every copy is out, so the queue takes the place a
+                            // dead, disabled «Lån boken» used to sit in. The list
+                            // cannot know whether this reader is already in the
+                            // queue; the refusal lands them on the book page,
+                            // which shows their place in it.
+                            <DropdownMenuItem
+                              nativeButton
+                              render={
+                                <button
+                                  type="submit"
+                                  form={`reserver-${book.id}`}
+                                />
+                              }
+                            >
+                              <HugeiconsIcon icon={Bookmark02Icon} strokeWidth={2} />
+                              Reserver
                             </DropdownMenuItem>
                           ) : (
                             <DropdownMenuItem render={<Link href="/logg-inn" />}>

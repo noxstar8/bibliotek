@@ -474,14 +474,21 @@ export default function StylePage() {
         <Section number="05" title="Statusmerker">
           <div className="flex flex-wrap items-center gap-3">
             <Badge>Tilgjengelig</Badge>
+            <Badge>Klar til henting</Badge>
             <Badge variant="secondary">Utlånt</Badge>
+            <Badge variant="secondary">I kø</Badge>
             <Badge variant="destructive">Forfalt</Badge>
             <Badge variant="outline">Bibliotekar</Badge>
           </div>
           <p className="mt-4 max-w-2xl text-sm text-muted-foreground">
             Merkene står alltid sammen med tekst som forklarer hva de gjelder,
-            og brukes aldri som eneste bærer av informasjon. De tre første er
-            tilstander som endrer seg. Det siste er{" "}
+            og brukes aldri som eneste bærer av informasjon. De fem første er
+            tilstander som endrer seg, og fargen følger hva leseren kan gjøre:{" "}
+            <code className="font-mono text-xs">default</code> for det som er
+            klart til å hentes eller lånes, <code className="font-mono text-xs">
+              secondary
+            </code>{" "}
+            for det som er opptatt eller venter. Det siste er{" "}
             <code className="font-mono text-xs">outline</code>, som merker noe
             som ligger fast — en rolle, ikke en status.
           </p>

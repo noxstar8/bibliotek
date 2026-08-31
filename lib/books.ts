@@ -1,4 +1,4 @@
-import { countActiveLoans } from "@/lib/availability";
+import { countActiveLoans, countHeldCopies } from "@/lib/availability";
 import * as db from "@/lib/db";
 import type { BookProblem, BookValues } from "@/lib/forms";
 import { isValidIsbn, sameIsbn } from "@/lib/isbn";
@@ -122,9 +122,15 @@ export async function editBook(id: string, changes: db.NewBook): Promise<BookRes
 
   const book = await db.updateBook(id, changes, (database, current) => {
     if (isbnTaken(database, changes.isbn, current.id)) refused.push("isbn-taken");
-    if (changes.copies < countActiveLoans(database.loans, current.id)) {
-      refused.push("copies-below-on-loan");
-    }
+
+    // Copies on the pickup shelf are spoken for just as firmly as ones on loan:
+    // somebody is coming in for them. Counting only the loans would let the
+    // stock be cut out from under a reservation.
+    const committed =
+      countActiveLoans(database.loans, current.id) +
+      countHeldCopies(database.reservations, current.id);
+
+    if (changes.copies < committed) refused.push("copies-below-on-loan");
 
     return refused.length === 0;
   });
@@ -138,12 +144,16 @@ export async function editBook(id: string, changes: db.NewBook): Promise<BookRes
  *
  * A copy that is out on loan is owed back to the library, and the borrower is
  * owed a title to hand it back against — so the entry stays until every copy is
- * in. Loans of the title that are already settled are left standing.
+ * in. Loans of the title that are already settled are left standing, while
+ * anyone still queueing for it has their reservation withdrawn.
  */
-export async function removeBook(id: string): Promise<BookResult> {
+export async function removeBook(
+  id: string,
+  now: Date = new Date()
+): Promise<BookResult> {
   const refused: BookError[] = [];
 
-  const book = await db.deleteBook(id, (database, current) => {
+  const book = await db.deleteBook(id, now.toISOString(), (database, current) => {
     if (countActiveLoans(database.loans, current.id) > 0) refused.push("book-on-loan");
 
     return refused.length === 0;

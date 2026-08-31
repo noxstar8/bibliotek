@@ -124,5 +124,34 @@
       "dueAt": "2026-08-29T15:30:00.000Z",
       "returnedAt": null
     }
+  ],
+  "reservations": [
+    {
+      "id": "reservation-1",
+      "bookId": "book-5",
+      "borrowerId": "borrower-3",
+      "reservedAt": "2026-08-12T10:00:00.000Z",
+      "readyAt": null,
+      "closedAt": null,
+      "closedReason": null
+    },
+    {
+      "id": "reservation-2",
+      "bookId": "book-5",
+      "borrowerId": "borrower-2",
+      "reservedAt": "2026-08-19T16:45:00.000Z",
+      "readyAt": null,
+      "closedAt": null,
+      "closedReason": null
+    },
+    {
+      "id": "reservation-3",
+      "bookId": "book-2",
+      "borrowerId": "borrower-3",
+      "reservedAt": "2026-08-05T08:30:00.000Z",
+      "readyAt": "2026-08-24T14:10:00.000Z",
+      "closedAt": null,
+      "closedReason": null
+    }
   ]
 }

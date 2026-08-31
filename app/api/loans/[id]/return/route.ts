@@ -25,7 +25,10 @@ export async function POST(
   revalidatePath("/");
   revalidatePath("/mine-laan");
   revalidatePath("/admin");
+  revalidatePath("/admin/reservasjoner");
   revalidatePath(`/boker/${result.loan.bookId}`);
 
-  return Response.json({ loan: result.loan });
+  // `promoted` is who the freed copy was put aside for — empty when nobody was
+  // waiting for the title.
+  return Response.json({ loan: result.loan, promoted: result.promoted });
 }

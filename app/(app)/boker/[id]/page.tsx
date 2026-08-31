@@ -6,6 +6,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   AlertCircleIcon,
   ArrowLeft01Icon,
+  Bookmark02Icon,
   BookOpen01Icon,
   Calendar03Icon,
 } from "@hugeicons/core-free-icons";
@@ -23,11 +24,20 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { borrowBookAction } from "@/lib/actions";
+import {
+  borrowBookAction,
+  cancelReservationAction,
+  reserveBookAction,
+} from "@/lib/actions";
 import { getCurrentBorrower } from "@/lib/auth";
 import { describeError } from "@/lib/errors";
 import { formatDate } from "@/lib/format";
-import { findBook, listActiveLoansForBook, LOAN_PERIOD_DAYS } from "@/lib/loans";
+import {
+  findBook,
+  findReservationForBorrower,
+  listActiveLoansForBook,
+  LOAN_PERIOD_DAYS,
+} from "@/lib/loans";
 
 export const dynamic = "force-dynamic";
 
@@ -74,6 +84,16 @@ export default async function BookPage({
     .sort((a, b) => a.localeCompare(b))
     .at(0);
 
+  const reservation = viewer ? await findReservationForBorrower(id, viewer.id) : null;
+  const hasCopyOut =
+    viewer !== null && activeLoans.some((loan) => loan.borrowerId === viewer.id);
+
+  // A copy already put aside for the reader outranks everything else the footer
+  // could say. Without that, someone whose book is lying in the counter would be
+  // offered «Lån boken» — and turned down, because their own held copy is not
+  // lendable to anybody, themselves included.
+  const waitingForPickup = reservation?.status === "ready";
+
   return (
     <>
       <PageHeading title={book.title}>
@@ -115,12 +135,25 @@ export default async function BookPage({
               <span className="tabular-nums">
                 {book.available} av {book.copies} tilgjengelige
               </span>
+              {book.held > 0 ? (
+                <span className="text-muted-foreground">
+                  {" · "}
+                  <span className="tabular-nums">{book.held}</span> satt av til henting
+                </span>
+              ) : null}
             </DetailRow>
             <DetailRow label="Ute på lån">
               {book.onLoan === 0 ? (
                 <span className="text-muted-foreground">Ingen</span>
               ) : (
                 <span className="tabular-nums">{book.onLoan}</span>
+              )}
+            </DetailRow>
+            <DetailRow label="Reservasjoner">
+              {book.reserved === 0 ? (
+                <span className="text-muted-foreground">Ingen i kø</span>
+              ) : (
+                <span className="tabular-nums">{book.reserved} i kø</span>
               )}
             </DetailRow>
             <DetailRow label="Første innlevering">
@@ -142,19 +175,42 @@ export default async function BookPage({
           </dl>
         </CardContent>
         <CardFooter className="flex-wrap gap-3">
-          {viewer ? (
-            <form action={borrowBookAction}>
-              <input type="hidden" name="bookId" value={book.id} />
-              <Button type="submit" disabled={book.available === 0}>
-                <HugeiconsIcon icon={BookOpen01Icon} strokeWidth={2} />
-                Lån boken
-              </Button>
-            </form>
-          ) : (
+          {!viewer ? (
             <Button nativeButton={false} render={<Link href="/logg-inn" />}>
               <HugeiconsIcon icon={BookOpen01Icon} strokeWidth={2} />
               Logg inn for å låne
             </Button>
+          ) : reservation ? (
+            // Already in the queue: the only thing left to offer is the way back
+            // out of it. Picking the book up happens at the desk, not here.
+            <form action={cancelReservationAction}>
+              <input type="hidden" name="reservationId" value={reservation.id} />
+              <input type="hidden" name="title" value={book.title} />
+              <Button type="submit" variant="outline">
+                <HugeiconsIcon icon={Bookmark02Icon} strokeWidth={2} />
+                Si fra deg reservasjonen
+              </Button>
+            </form>
+          ) : book.available > 0 ? (
+            <form action={borrowBookAction}>
+              <input type="hidden" name="bookId" value={book.id} />
+              <Button type="submit">
+                <HugeiconsIcon icon={BookOpen01Icon} strokeWidth={2} />
+                Lån boken
+              </Button>
+            </form>
+          ) : hasCopyOut ? null : (
+            // Every copy is out and the reader has none of them, so the queue is
+            // the whole of what this page can offer — and it takes the primary
+            // button that «Lån boken» would otherwise have had.
+            <form action={reserveBookAction}>
+              <input type="hidden" name="bookId" value={book.id} />
+              <input type="hidden" name="title" value={book.title} />
+              <Button type="submit">
+                <HugeiconsIcon icon={Bookmark02Icon} strokeWidth={2} />
+                Reserver boken
+              </Button>
+            </form>
           )}
           <Button variant="outline" nativeButton={false} render={<Link href="/" />}>
             <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
@@ -163,11 +219,21 @@ export default async function BookPage({
           <p className="basis-full text-sm/relaxed text-muted-foreground">
             {!viewer
               ? "Katalogen er åpen for alle, men et lån må registreres på en person."
-              : book.available > 0
-                ? `Lånet registreres på deg og løper i ${LOAN_PERIOD_DAYS} dager.`
-                : `Alle eksemplarer er utlånt.${
-                    nextDueAt ? ` Det første forfaller ${formatDate(nextDueAt)}.` : ""
-                  }`}
+              : waitingForPickup
+                ? "Et eksemplar er satt av til deg og ligger klart i skranken. Det kan ikke lånes ut til noen andre."
+                : reservation
+                  ? `Du står som nummer ${reservation.position} i køen. Vi setter av et eksemplar til deg så snart et blir levert inn.${
+                      nextDueAt ? ` Det første forfaller ${formatDate(nextDueAt)}.` : ""
+                    }`
+                  : book.available > 0
+                    ? `Lånet registreres på deg og løper i ${LOAN_PERIOD_DAYS} dager.`
+                    : hasCopyOut
+                      ? "Du har allerede et eksemplar av denne tittelen ute på lån. Lever det før du stiller deg i kø for et nytt."
+                      : `Alle eksemplarer er utlånt.${
+                          nextDueAt
+                            ? ` Det første forfaller ${formatDate(nextDueAt)}.`
+                            : ""
+                        } Reserverer du, blir det første som kommer inn satt av til deg.`}
           </p>
         </CardFooter>
       </Card>
