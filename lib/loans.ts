@@ -140,6 +140,20 @@ export async function listLoansForBorrower(
   return describe(await db.getLoansForBorrower(borrowerId), today);
 }
 
+/**
+ * What a person still owes: the late fees on the books they have not handed
+ * back.
+ *
+ * Returned loans are left out on purpose. Their fee is frozen on the day the
+ * book came back, and nothing in the model records a payment — counting them
+ * would give a figure that no librarian could ever clear.
+ */
+export function outstandingFees(loans: LoanView[]): number {
+  return loans
+    .filter((loan) => loan.status !== "returned")
+    .reduce((sum, loan) => sum + loan.lateFee, 0);
+}
+
 export async function listActiveLoans(today: DateInput = new Date()): Promise<LoanView[]> {
   return describe(await db.getActiveLoans(), today);
 }

@@ -52,7 +52,11 @@ import { cancelReservationAction } from "@/lib/actions";
 import { requireBorrower } from "@/lib/auth";
 import { describeError } from "@/lib/errors";
 import { formatDate, formatKroner } from "@/lib/format";
-import { listLoansForBorrower, listReservationsForBorrower } from "@/lib/loans";
+import {
+  listLoansForBorrower,
+  listReservationsForBorrower,
+  outstandingFees,
+} from "@/lib/loans";
 
 export const dynamic = "force-dynamic";
 
@@ -70,9 +74,7 @@ export default async function MyLoansPage({ searchParams }: PageProps<"/mine-laa
   ]);
 
   const error = describeError(feil);
-  const outstanding = loans
-    .filter((loan) => loan.status !== "returned")
-    .reduce((sum, loan) => sum + loan.lateFee, 0);
+  const outstanding = outstandingFees(loans);
 
   // Only the live queue belongs on this page. A reservation that has been
   // collected is a loan now, and one that was withdrawn is not owed to anybody
@@ -213,7 +215,7 @@ export default async function MyLoansPage({ searchParams }: PageProps<"/mine-laa
                               }
                             >
                               <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
-                              Åpne boken
+                              Se bok
                             </DropdownMenuItem>
                           ) : null}
                           <DropdownMenuSeparator />
