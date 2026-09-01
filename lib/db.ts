@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { isActive, isOpen } from "@/lib/availability";
 import { sameIsbn } from "@/lib/isbn";
-import type { Book, Borrower, Database, Loan, Reservation } from "@/lib/types";
+import type { Book, Borrower, Database, Loan, Reservation, Role } from "@/lib/types";
 
 /**
  * The only module that touches disk. Everything else goes through these
@@ -186,6 +186,33 @@ export async function createBorrower(input: NewBorrower): Promise<Borrower | nul
     const borrower: Borrower = { id: `laaner-${randomUUID()}`, ...input };
 
     database.borrowers.push(borrower);
+    await write(database);
+    return borrower;
+  });
+}
+
+/**
+ * Sets one person's role and returns them. `null` when nobody has that id, or
+ * when `precondition` turns the change down.
+ *
+ * The precondition sees the whole database rather than just the person, because
+ * the rule worth enforcing here is about the register *around* them — "the last
+ * librarian stays a librarian" — and that count moves between the page being
+ * drawn and the form arriving.
+ */
+export async function updateBorrowerRole(
+  id: string,
+  role: Role,
+  precondition: (database: Database, borrower: Borrower) => boolean = () => true
+): Promise<Borrower | null> {
+  return enqueue(async () => {
+    const database = await read();
+    const borrower = database.borrowers.find((candidate) => candidate.id === id);
+
+    if (!borrower) return null;
+    if (!precondition(database, borrower)) return null;
+
+    borrower.role = role;
     await write(database);
     return borrower;
   });

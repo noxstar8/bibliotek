@@ -168,7 +168,14 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                       </RecordCell>
                     </TableCell>
                     <TableCell className={`py-3 ${SECONDARY_CELL}`}>
-                      <RecordCell name={loan.borrower?.name ?? "Ukjent låner"}>
+                      <RecordCell
+                        name={loan.borrower?.name ?? "Ukjent låner"}
+                        href={
+                          loan.borrower
+                            ? `/admin/brukere/${loan.borrower.id}`
+                            : undefined
+                        }
+                      >
                         {loan.borrower?.email}
                       </RecordCell>
                     </TableCell>
@@ -221,7 +228,7 @@ export default async function AdminPage({ searchParams }: PageProps<"/admin">) {
                               render={<Link href={`/boker/${loan.book.id}`} />}
                             >
                               <HugeiconsIcon icon={Book02Icon} strokeWidth={2} />
-                              Åpne boken
+                              Se bok
                             </DropdownMenuItem>
                           ) : null}
                         </DropdownMenuContent>

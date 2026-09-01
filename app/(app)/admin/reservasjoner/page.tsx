@@ -172,7 +172,14 @@ export default async function ReservationsPage({
                       </RecordCell>
                     </TableCell>
                     <TableCell className={`py-3 ${SECONDARY_CELL}`}>
-                      <RecordCell name={reservation.borrower?.name ?? "Ukjent låner"}>
+                      <RecordCell
+                        name={reservation.borrower?.name ?? "Ukjent låner"}
+                        href={
+                          reservation.borrower
+                            ? `/admin/brukere/${reservation.borrower.id}`
+                            : undefined
+                        }
+                      >
                         {reservation.borrower?.email}
                       </RecordCell>
                     </TableCell>

@@ -13,6 +13,7 @@ import {
   SIGNED_OUT,
 } from "@/lib/auth";
 import { addBook, type BookError, editBook, parseBook, removeBook } from "@/lib/books";
+import { setBorrowerRole } from "@/lib/borrowers";
 import {
   createBorrower,
   DEMO_RESET_ENABLED,
@@ -53,6 +54,27 @@ function revalidateCatalogue(bookId: string) {
   revalidateLoanViews(bookId);
   revalidatePath("/admin/boker");
   revalidatePath(`/admin/boker/${bookId}`);
+}
+
+/**
+ * Every screen in the app at once.
+ *
+ * Reserved for the changes that reach further than a list of paths could
+ * name — a role, an enrolment, a reset of the whole demo.
+ *
+ * This one has to be the whole tree, not a list of paths. A role is rendered by
+ * `app/(app)/layout.tsx` — the header repeats the name, the role badge and the
+ * links the person may open — and that layout sits above *every* screen in the
+ * lending system. Revalidating the administration pages alone leaves a demoted
+ * librarian looking at a cached header that still calls them a librarian and
+ * still offers the administration link, on every page we did not name.
+ *
+ * `revalidatePath("/", "layout")` invalidates the root layout, every layout
+ * beneath it and every page beneath those, which is exactly the reach a role
+ * has.
+ */
+function revalidateEverything() {
+  revalidatePath("/", "layout");
 }
 
 /** Lends the book on the detail page to whoever is browsing. */
@@ -190,14 +212,10 @@ export async function resetDemoDataAction() {
 
   await resetDatabase();
 
-  revalidateLoanViews();
-  // Every title at once — a reset changes availability across the catalogue,
-  // not just on the one book a borrow would have touched.
-  revalidatePath("/boker/[id]", "page");
-  revalidatePath("/admin/boker");
-  revalidatePath("/admin/boker/[id]", "page");
-  revalidatePath("/admin/brukere");
-  revalidatePath("/logg-inn");
+  // Everything at once. A reset moves every title's availability and replaces
+  // the register the header reads the current user out of, so there is no
+  // screen in the app it leaves standing.
+  revalidateEverything();
   redirect("/admin/innstillinger?tilbakestilt=1");
 }
 
@@ -303,6 +321,35 @@ export async function deleteBookAction(formData: FormData) {
   redirect(`/admin/boker?slettet=${encodeURIComponent(result.book.title)}`);
 }
 
+/* ----------------------------------------------------------- brukerne --- */
+
+/**
+ * Makes a person a librarian, or puts them back to being a plain borrower.
+ *
+ * Refused on the way down in two cases — taking the keys off yourself, and
+ * leaving the register with no librarian at all — because neither can be undone
+ * from inside the app. Both are re-checked in the write itself; the page only
+ * explains them.
+ */
+export async function updateRoleAction(formData: FormData) {
+  const actor = await getCurrentBorrower();
+  if (!actor || !isLibrarian(actor)) redirect("/logg-inn");
+
+  const id = String(formData.get("borrowerId") ?? "");
+  const role: Role = formData.get("role") === "librarian" ? "librarian" : "borrower";
+
+  const result = await setBorrowerRole(id, role, actor.id);
+
+  if (!result.ok) {
+    // Back to the page the librarian was on, so the person they were looking at
+    // is still in front of them when the reason turns up.
+    redirect(`/admin/brukere/${encodeURIComponent(id)}?feil=${errorSlug(result.error)}`);
+  }
+
+  revalidateEverything();
+  redirect(`/admin/brukere/${encodeURIComponent(id)}?rolle=${result.borrower.role}`);
+}
+
 /* ----------------------------------------------------------------- who am I --- */
 
 /**
@@ -382,7 +429,6 @@ export async function registerBorrowerAction(
     };
   }
 
-  revalidatePath("/admin/brukere");
-  revalidatePath("/logg-inn");
+  revalidateEverything();
   redirect(`/admin/brukere?ny=${encodeURIComponent(borrower.id)}`);
 }

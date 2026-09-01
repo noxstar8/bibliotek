@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkCircle02Icon, UserIcon } from "@hugeicons/core-free-icons";
+import {
+  ArrowRight01Icon,
+  CheckmarkCircle02Icon,
+  MoreVerticalIcon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 
 import { AdminNav } from "@/components/admin-nav";
 import { LibrarianRequired } from "@/components/librarian-required";
@@ -8,6 +14,7 @@ import { PageHeading } from "@/components/page-heading";
 import { ColumnHead, IDENTITY_CELL, RecordCell } from "@/components/record-cell";
 import { RoleBadge } from "@/components/role-badge";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -17,6 +24,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Table,
   TableBody,
@@ -91,8 +104,9 @@ export default async function BorrowersPage({
                 <ColumnHead className="pl-(--card-spacing)">Navn</ColumnHead>
                 <ColumnHead>Rolle</ColumnHead>
                 <ColumnHead className="text-right">Ute nå</ColumnHead>
+                <ColumnHead className="text-right">Lån totalt</ColumnHead>
                 <ColumnHead className="pr-(--card-spacing) text-right">
-                  Lån totalt
+                  Handling
                 </ColumnHead>
               </TableRow>
             </TableHeader>
@@ -106,7 +120,11 @@ export default async function BorrowersPage({
                     <TableCell
                       className={`py-3 pl-(--card-spacing) ${IDENTITY_CELL}`}
                     >
-                      <RecordCell icon={UserIcon} name={person.name}>
+                      <RecordCell
+                        icon={UserIcon}
+                        name={person.name}
+                        href={`/admin/brukere/${person.id}`}
+                      >
                         {person.email}
                       </RecordCell>
                     </TableCell>
@@ -116,8 +134,37 @@ export default async function BorrowersPage({
                     <TableCell className="py-3 text-right font-medium tabular-nums">
                       {out}
                     </TableCell>
-                    <TableCell className="py-3 pr-(--card-spacing) text-right tabular-nums text-muted-foreground">
+                    <TableCell className="py-3 text-right tabular-nums text-muted-foreground">
                       {mine.length}
+                    </TableCell>
+                    <TableCell className="py-3 pr-(--card-spacing) text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger
+                          className={buttonVariants({
+                            variant: "ghost",
+                            size: "icon-sm",
+                          })}
+                          aria-label={`Handlinger for ${person.name}`}
+                        >
+                          <HugeiconsIcon
+                            icon={MoreVerticalIcon}
+                            strokeWidth={2}
+                          />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                          <DropdownMenuItem
+                            render={
+                              <Link href={`/admin/brukere/${person.id}`} />
+                            }
+                          >
+                            <HugeiconsIcon
+                              icon={ArrowRight01Icon}
+                              strokeWidth={2}
+                            />
+                            Se bruker
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 );

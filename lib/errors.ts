@@ -1,4 +1,5 @@
 import type { BookError } from "@/lib/books";
+import type { BorrowerError } from "@/lib/borrowers";
 import type { LoanError } from "@/lib/loans";
 import type { ReservationError } from "@/lib/reservations";
 
@@ -12,7 +13,7 @@ import type { ReservationError } from "@/lib/reservations";
  * Both failure vocabularies share `"book-not-found"`, and they mean the same
  * thing to a reader either way: the title is not there any more.
  */
-export type AppError = LoanError | BookError | ReservationError;
+export type AppError = LoanError | BookError | ReservationError | BorrowerError;
 
 const slugs: Record<AppError, string> = {
   "book-not-found": "ukjent-bok",
@@ -29,6 +30,9 @@ const slugs: Record<AppError, string> = {
   "reservation-closed": "reservasjon-avsluttet",
   "reservation-not-ready": "ikke-klar-til-henting",
   "not-your-reservation": "ikke-din-reservasjon",
+  "borrower-not-found": "ukjent-bruker",
+  "cannot-demote-self": "kan-ikke-degradere-seg-selv",
+  "last-librarian": "siste-bibliotekar",
 };
 
 const messages: Record<string, { title: string; description: string }> = {
@@ -106,6 +110,22 @@ const messages: Record<string, { title: string; description: string }> = {
     title: "Reservasjonen tilhører en annen",
     description:
       "Du kan bare si fra deg dine egne reservasjoner. Ingen ting ble endret.",
+  },
+
+  "ukjent-bruker": {
+    title: "Fant ikke brukeren",
+    description:
+      "Personen står ikke i registeret lenger. Ingen ting ble endret. Gå tilbake til brukerlisten og prøv på nytt.",
+  },
+  "kan-ikke-degradere-seg-selv": {
+    title: "Du kan ikke ta fra deg selv tilgangen",
+    description:
+      "Da hadde du mistet administrasjonen i samme øyeblikk, også denne siden. Rollen står uendret. Be en annen bibliotekar om å gjøre det for deg.",
+  },
+  "siste-bibliotekar": {
+    title: "Siste bibliotekar",
+    description:
+      "Personen er den eneste bibliotekaren i registeret, og da hadde ingen hatt tilgang til administrasjonen. Rollen står uendret. Gjør noen andre til bibliotekar først.",
   },
 };
 
