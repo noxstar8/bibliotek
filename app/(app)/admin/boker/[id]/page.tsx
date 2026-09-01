@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import type { ReactNode } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   AlertCircleIcon,
@@ -12,6 +11,7 @@ import {
 import { BookForm } from "@/components/book-form";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { DeleteBook } from "@/components/delete-book";
+import { Fact } from "@/components/fact";
 import { LibrarianRequired } from "@/components/librarian-required";
 import { PageHeading } from "@/components/page-heading";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -45,18 +45,6 @@ export async function generateMetadata({
     title: `Rediger ${book.title} – Bibliotek`,
     description: `Rett opplysningene om ${book.title} i katalogen`,
   };
-}
-
-/** One figure with its label above it, the way the stat blocks read elsewhere. */
-function Fact({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <dt className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
-        {label}
-      </dt>
-      <dd className="font-medium">{children}</dd>
-    </div>
-  );
 }
 
 export default async function EditBookPage({
