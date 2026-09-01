@@ -83,7 +83,7 @@ export function BookRowActions({
           </DropdownMenuItem>
           <DropdownMenuItem render={<Link href={`/boker/${bookId}`} />}>
             <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
-            Åpne i katalogen
+            Se bok
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           {onLoan > 0 ? (

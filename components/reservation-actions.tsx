@@ -99,7 +99,7 @@ export function ReservationActions({
           {reservation.book ? (
             <DropdownMenuItem render={<Link href={`/boker/${reservation.book.id}`} />}>
               <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
-              Åpne boken
+              Se bok
             </DropdownMenuItem>
           ) : null}
           <DropdownMenuSeparator />

@@ -205,7 +205,7 @@ export default async function BooksPage() {
                               icon={ArrowRight01Icon}
                               strokeWidth={2}
                             />
-                            Åpne boken
+                            Se bok
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

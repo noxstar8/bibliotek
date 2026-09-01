@@ -244,6 +244,10 @@ where the surface begins and ends; a rule inside it just chops the surface up.
   everyday action first, then the edit and history items, then a
   `DropdownMenuSeparator` and the `variant="destructive"` item last. Never put a
   destructive item next to a routine one without that separator.
+  The item that simply opens the record is **«Se {substantiv}»** — "Se bok",
+  "Se bruker" — never "Åpne …". One verb for one job, so the menus read the same
+  everywhere. Quote the record in the `aria-label` only where the app quotes it
+  in prose: a title takes « », a person's name does not.
 - Detail views: `Card` with `CardHeader` (title, description, `CardAction` for a
   status `Badge`), a `<dl>` of label/value rows in `CardContent`, and actions in
   a `CardFooter`.

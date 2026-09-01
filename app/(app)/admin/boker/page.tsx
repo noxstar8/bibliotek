@@ -225,7 +225,7 @@ export default async function AdminBooksPage({
                               icon={ArrowRight01Icon}
                               strokeWidth={2}
                             />
-                            Åpne i katalogen
+                            Se bok
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
