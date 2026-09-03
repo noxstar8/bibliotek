@@ -22,7 +22,7 @@ gang den tas opp, blir ikke tatt opp.
 
 Promptene sier bevisst ingenting om filer, funksjoner eller komponenter. De
 beskriver **opplevelsen**, ikke løsningen — `CLAUDE.md` og
-[designspråket](../design/README.md) leses uansett automatisk, og en prompt som
+[designspråket](../design/CLAUDE.md) leses uansett automatisk, og en prompt som
 foreskriver implementasjonen låser den til slik koden så ut den dagen ideen ble
 skrevet.
 

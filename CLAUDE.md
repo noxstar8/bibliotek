@@ -2,7 +2,7 @@
 
 # UI and UX
 
-Before building or changing any UI, read @docs/design/README.md — the design
+Before building or changing any UI, read @docs/design/CLAUDE.md — the design
 language (palette, typography, shape, component and state conventions) for this
 app.
 

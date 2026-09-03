@@ -92,11 +92,11 @@ telles i hele UTC-døgn, så klokkeslettet aldri gjør en innlevering forsinket.
 
 ## Design
 
-Se [`docs/design/README.md`](docs/design/README.md) før du endrer noe visuelt.
+Se [`docs/design/CLAUDE.md`](docs/design/CLAUDE.md) før du endrer noe visuelt.
 [`/stil`](app/stil/page.tsx) er den levende referansen og holdes i takt med
 språket.
 
 ## Ideer
 
-[`docs/ideas/`](docs/ideas/README.md) er en idébank: forbedringer som er vurdert
+[`docs/ideas/`](docs/ideas/CLAUDE.md) er en idébank: forbedringer som er vurdert
 mot koden, men ikke bygget. Hver av dem er skrevet som en ferdig prompt.
