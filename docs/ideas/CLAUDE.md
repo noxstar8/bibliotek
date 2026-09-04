@@ -12,6 +12,7 @@ gang den tas opp, blir ikke tatt opp.
 | Fil | Handler om | Status |
 | --- | --- | --- |
 | [`borrower-card.md`](borrower-card.md) | Lånekortet — `/admin/brukere/[id]` | 1 av 10 gjort |
+| [`book-page.md`](book-page.md) | Bokdetaljsiden — `/boker/[id]` | 0 av 1 gjort |
 
 ## Slik bruker du dem
 
