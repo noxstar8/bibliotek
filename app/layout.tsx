@@ -28,7 +28,6 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 		>
 			<body className='flex min-h-full flex-col bg-background text-foreground'>
 				{children}
-				<footer>Test</footer>
 			</body>
 		</html>
 	);
