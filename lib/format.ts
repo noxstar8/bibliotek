@@ -25,5 +25,5 @@ export function formatKroner(amount: number): string {
 
 /** "1 dag" / "5 dager" — the unit follows the count. */
 export function formatDays(count: number): string {
-  return `${numberFormat.format(count)} ${count === 1 ? "dag" : "dager"}`;
+  return `${numberFormat.format(count)} ${count === 1 ? "dager" : "dag"}`;
 }
