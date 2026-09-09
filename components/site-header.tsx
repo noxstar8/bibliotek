@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Suspense } from "react";
 import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -10,6 +11,7 @@ import {
 } from "@hugeicons/core-free-icons";
 
 import { Wordmark } from "@/components/logo";
+import { SiteSearch } from "@/components/site-search";
 import { RoleBadge } from "@/components/role-badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -28,9 +30,13 @@ const navigation = [
   { href: "/admin", label: "Administrasjon", needsUser: true, librarianOnly: true },
 ];
 
-/** A book detail page is still the "Bøker" part of the app. */
+/** A book detail page, and a search of the catalogue, are still "Bøker". */
 function isCurrent(href: string, pathname: string): boolean {
-  if (href === "/") return pathname === "/" || pathname.startsWith("/boker");
+  if (href === "/") {
+    return (
+      pathname === "/" || pathname.startsWith("/boker") || pathname === "/sok"
+    );
+  }
   if (href === "/admin") return pathname.startsWith("/admin");
   return pathname === href;
 }
@@ -49,12 +55,19 @@ export function SiteHeader({ user }: { user: Borrower | null }) {
 
   return (
     <header className="border-b border-border bg-card">
-      <div className="mx-auto flex w-full max-w-225 flex-wrap items-center justify-between gap-x-8 gap-y-3 px-6 py-3">
+      <div className="mx-auto flex w-full max-w-225 flex-wrap items-center gap-x-6 gap-y-3 px-6 py-3">
         <Link href="/" aria-label="Bibliotek — til boklisten">
           <Wordmark />
         </Link>
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        {/* `useSearchParams` reads the term back out of the URL, and every
+            screen under this header would otherwise have to render on the
+            client to let it. */}
+        <Suspense fallback={<div className="h-9 sm:w-72" />}>
+          <SiteSearch className="order-last w-full sm:order-none sm:w-72" />
+        </Suspense>
+
+        <div className="ml-auto flex flex-wrap items-center gap-x-4 gap-y-2">
           <nav aria-label="Hovedmeny">
             <ul className="flex flex-wrap items-center gap-1">
               {navigation

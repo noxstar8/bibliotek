@@ -30,7 +30,7 @@ business rules stated in full; what follows is the shape those rules live in.
 app/(app)/**      server components — read through lib/*, render, no writes
 lib/actions.ts    "use server" — the only place forms enter the domain
 lib/{loans,books,borrowers}.ts   services — commands and *View types
-lib/{availability,reservations,fees,dates,isbn}.ts   pure rules, no I/O
+lib/{availability,reservations,fees,dates,isbn,search}.ts   pure rules, no I/O
 lib/db.ts         the only module that touches disk
 ```
 

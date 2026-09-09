@@ -20,6 +20,7 @@ npm run reset-data # tilbake til utgangspunktet i data/seed.json
 | --- | --- |
 | `/` | Hele samlingen, med hvor mange eksemplarer som er ledige |
 | `/boker/[id]` | Detaljer om én tittel, og knappen som låner eller reserverer den |
+| `/sok?q=` | Treffene på et søkeord — samme tabell som forsiden, filtrert |
 | `/mine-laan` | Lånene og reservasjonene dine, med frister, status og gebyr |
 | `/admin` | Alle aktive lån, med registrering av retur |
 | `/admin/reservasjoner` | Hele reservasjonskøen, med utlevering og sletting |
@@ -33,7 +34,7 @@ npm run reset-data # tilbake til utgangspunktet i data/seed.json
 ```
 GET  /api/books              GET  /api/books/[id]
 GET  /api/loans/mine         POST /api/loans
-POST /api/loans/[id]/return
+POST /api/loans/[id]/return  GET  /api/search?q=
 ```
 
 ## Datalaget
