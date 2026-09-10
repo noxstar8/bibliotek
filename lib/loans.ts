@@ -9,6 +9,7 @@ import {
 import { addDays, daysBetween, type DateInput } from "@/lib/dates";
 import * as db from "@/lib/db";
 import { calculateLateFee, daysOverdue } from "@/lib/fees";
+import { byPopularity } from "@/lib/popularity";
 import {
   canCollect,
   getReservationStatus,
@@ -105,6 +106,40 @@ export async function listBooks(): Promise<BookView[]> {
   ]);
 
   return books.map((book) => toBookView(book, loans, reservations));
+}
+
+/** The catalogue in two orders at once — see {@link listBookRows}. */
+export type BookRows = {
+  /** The catalogue in its own order. */
+  books: BookView[];
+  /**
+   * The same views, ordered by how often each title has been borrowed, most
+   * first. Titles nobody has borrowed are left out — see {@link byPopularity}.
+   *
+   * The whole loan history is counted, not just the active loans: this is
+   * about what people keep asking for, not what is out this afternoon.
+   */
+  popular: BookView[];
+};
+
+/**
+ * The catalogue and its popularity order from a single read.
+ *
+ * A screen that shows both — the front page does — would otherwise call
+ * `listBooks` and a second listing that reads the same loans over again. The
+ * two orders come off one set of records here, so the page costs one round
+ * trip rather than four.
+ */
+export async function listBookRows(): Promise<BookRows> {
+  const [books, loans, reservations] = await Promise.all([
+    db.getBooks(),
+    db.getLoans(),
+    db.getReservations(),
+  ]);
+
+  const views = books.map((book) => toBookView(book, loans, reservations));
+
+  return { books: views, popular: byPopularity(views, loans) };
 }
 
 export async function findBook(id: string): Promise<BookView | null> {
