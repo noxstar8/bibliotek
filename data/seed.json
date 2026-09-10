@@ -123,6 +123,182 @@
       "borrowedAt": "2026-08-01T15:30:00.000Z",
       "dueAt": "2026-08-29T15:30:00.000Z",
       "returnedAt": null
+    },
+    {
+      "id": "loan-5",
+      "bookId": "book-1",
+      "borrowerId": "borrower-2",
+      "borrowedAt": "2025-09-02T10:00:00.000Z",
+      "dueAt": "2025-09-30T10:00:00.000Z",
+      "returnedAt": "2025-09-24T14:30:00.000Z"
+    },
+    {
+      "id": "loan-6",
+      "bookId": "book-1",
+      "borrowerId": "borrower-3",
+      "borrowedAt": "2025-10-05T10:00:00.000Z",
+      "dueAt": "2025-11-02T10:00:00.000Z",
+      "returnedAt": "2025-10-28T14:30:00.000Z"
+    },
+    {
+      "id": "loan-7",
+      "bookId": "book-1",
+      "borrowerId": "borrower-4",
+      "borrowedAt": "2025-11-10T10:00:00.000Z",
+      "dueAt": "2025-12-08T10:00:00.000Z",
+      "returnedAt": "2025-12-01T14:30:00.000Z"
+    },
+    {
+      "id": "loan-8",
+      "bookId": "book-1",
+      "borrowerId": "borrower-2",
+      "borrowedAt": "2026-01-14T10:00:00.000Z",
+      "dueAt": "2026-02-11T10:00:00.000Z",
+      "returnedAt": "2026-02-03T14:30:00.000Z"
+    },
+    {
+      "id": "loan-9",
+      "bookId": "book-3",
+      "borrowerId": "borrower-1",
+      "borrowedAt": "2025-09-15T10:00:00.000Z",
+      "dueAt": "2025-10-13T10:00:00.000Z",
+      "returnedAt": "2025-10-06T14:30:00.000Z"
+    },
+    {
+      "id": "loan-10",
+      "bookId": "book-3",
+      "borrowerId": "borrower-4",
+      "borrowedAt": "2025-11-20T10:00:00.000Z",
+      "dueAt": "2025-12-18T10:00:00.000Z",
+      "returnedAt": "2025-12-11T14:30:00.000Z"
+    },
+    {
+      "id": "loan-11",
+      "bookId": "book-3",
+      "borrowerId": "borrower-2",
+      "borrowedAt": "2026-02-02T10:00:00.000Z",
+      "dueAt": "2026-03-02T10:00:00.000Z",
+      "returnedAt": "2026-02-25T14:30:00.000Z"
+    },
+    {
+      "id": "loan-12",
+      "bookId": "book-3",
+      "borrowerId": "borrower-3",
+      "borrowedAt": "2026-04-08T10:00:00.000Z",
+      "dueAt": "2026-05-06T10:00:00.000Z",
+      "returnedAt": "2026-04-30T14:30:00.000Z"
+    },
+    {
+      "id": "loan-13",
+      "bookId": "book-7",
+      "borrowerId": "borrower-3",
+      "borrowedAt": "2025-10-01T10:00:00.000Z",
+      "dueAt": "2025-10-29T10:00:00.000Z",
+      "returnedAt": "2025-10-22T14:30:00.000Z"
+    },
+    {
+      "id": "loan-14",
+      "bookId": "book-7",
+      "borrowerId": "borrower-1",
+      "borrowedAt": "2026-01-07T10:00:00.000Z",
+      "dueAt": "2026-02-04T10:00:00.000Z",
+      "returnedAt": "2026-01-30T14:30:00.000Z"
+    },
+    {
+      "id": "loan-15",
+      "bookId": "book-7",
+      "borrowerId": "borrower-2",
+      "borrowedAt": "2026-05-12T10:00:00.000Z",
+      "dueAt": "2026-06-09T10:00:00.000Z",
+      "returnedAt": "2026-06-02T14:30:00.000Z"
+    },
+    {
+      "id": "loan-16",
+      "bookId": "book-5",
+      "borrowerId": "borrower-2",
+      "borrowedAt": "2025-12-01T10:00:00.000Z",
+      "dueAt": "2025-12-29T10:00:00.000Z",
+      "returnedAt": "2025-12-20T14:30:00.000Z"
+    },
+    {
+      "id": "loan-17",
+      "bookId": "book-5",
+      "borrowerId": "borrower-4",
+      "borrowedAt": "2026-03-16T10:00:00.000Z",
+      "dueAt": "2026-04-13T10:00:00.000Z",
+      "returnedAt": "2026-04-09T14:30:00.000Z"
+    },
+    {
+      "id": "loan-18",
+      "bookId": "book-2",
+      "borrowerId": "borrower-1",
+      "borrowedAt": "2026-02-17T10:00:00.000Z",
+      "dueAt": "2026-03-17T10:00:00.000Z",
+      "returnedAt": "2026-03-10T14:30:00.000Z"
+    },
+    {
+      "id": "loan-19",
+      "bookId": "book-4",
+      "borrowerId": "borrower-3",
+      "borrowedAt": "2025-11-03T10:00:00.000Z",
+      "dueAt": "2025-12-01T10:00:00.000Z",
+      "returnedAt": "2025-11-26T14:30:00.000Z"
+    },
+    {
+      "id": "loan-20",
+      "bookId": "book-4",
+      "borrowerId": "borrower-1",
+      "borrowedAt": "2026-04-20T10:00:00.000Z",
+      "dueAt": "2026-05-18T10:00:00.000Z",
+      "returnedAt": "2026-05-11T14:30:00.000Z"
+    },
+    {
+      "id": "loan-21",
+      "bookId": "book-6",
+      "borrowerId": "borrower-4",
+      "borrowedAt": "2026-06-01T10:00:00.000Z",
+      "dueAt": "2026-06-29T10:00:00.000Z",
+      "returnedAt": "2026-06-22T14:30:00.000Z"
+    },
+    {
+      "id": "loan-22",
+      "bookId": "book-7",
+      "borrowerId": "borrower-1",
+      "borrowedAt": "2026-08-24T11:20:00.000Z",
+      "dueAt": "2026-09-21T11:20:00.000Z",
+      "returnedAt": null
+    },
+    {
+      "id": "loan-23",
+      "bookId": "book-7",
+      "borrowerId": "borrower-2",
+      "borrowedAt": "2026-08-26T15:40:00.000Z",
+      "dueAt": "2026-09-23T15:40:00.000Z",
+      "returnedAt": null
+    },
+    {
+      "id": "loan-24",
+      "bookId": "book-7",
+      "borrowerId": "borrower-3",
+      "borrowedAt": "2026-09-01T09:05:00.000Z",
+      "dueAt": "2026-09-29T09:05:00.000Z",
+      "returnedAt": null
+    },
+    {
+      "id": "loan-25",
+      "bookId": "book-4",
+      "borrowerId": "borrower-2",
+      "borrowedAt": "2026-08-30T13:10:00.000Z",
+      "dueAt": "2026-09-27T13:10:00.000Z",
+      "returnedAt": null
+    },
+    {
+      "id": "loan-26",
+      "bookId": "book-4",
+      "borrowerId": "borrower-4",
+      "borrowedAt": "2026-09-03T16:00:00.000Z",
+      "dueAt": "2026-10-01T16:00:00.000Z",
+      "returnedAt": null
     }
   ],
   "reservations": [
@@ -150,6 +326,51 @@
       "borrowerId": "borrower-3",
       "reservedAt": "2026-08-05T08:30:00.000Z",
       "readyAt": "2026-08-24T14:10:00.000Z",
+      "closedAt": null,
+      "closedReason": null
+    },
+    {
+      "id": "reservation-4",
+      "bookId": "book-7",
+      "borrowerId": "borrower-4",
+      "reservedAt": "2026-09-02T10:00:00.000Z",
+      "readyAt": null,
+      "closedAt": null,
+      "closedReason": null
+    },
+    {
+      "id": "reservation-5",
+      "bookId": "book-7",
+      "borrowerId": "borrower-1",
+      "reservedAt": "2026-09-04T10:00:00.000Z",
+      "readyAt": null,
+      "closedAt": null,
+      "closedReason": null
+    },
+    {
+      "id": "reservation-6",
+      "bookId": "book-7",
+      "borrowerId": "borrower-2",
+      "reservedAt": "2026-09-05T10:00:00.000Z",
+      "readyAt": null,
+      "closedAt": null,
+      "closedReason": null
+    },
+    {
+      "id": "reservation-7",
+      "bookId": "book-4",
+      "borrowerId": "borrower-3",
+      "reservedAt": "2026-09-06T10:00:00.000Z",
+      "readyAt": null,
+      "closedAt": null,
+      "closedReason": null
+    },
+    {
+      "id": "reservation-8",
+      "bookId": "book-4",
+      "borrowerId": "borrower-1",
+      "reservedAt": "2026-09-07T10:00:00.000Z",
+      "readyAt": null,
       "closedAt": null,
       "closedReason": null
     }
