@@ -11,6 +11,7 @@ import {
   Calendar03Icon,
 } from "@hugeicons/core-free-icons";
 
+import { BookCover } from "@/components/book-cover";
 import { PageHeading } from "@/components/page-heading";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -122,8 +123,20 @@ export default async function BookPage({
             )}
           </CardAction>
         </CardHeader>
-        <CardContent>
-          <dl className="divide-y divide-border text-sm">
+        {/* The cover beside the details rather than above them: it is the one
+        thing on this page that identifies the book at a glance, and stacking it
+        on top would push every fact below the fold. It stacks on a phone, where
+        there is no room for two columns. */}
+        <CardContent className="flex flex-col gap-6 sm:flex-row sm:items-start">
+          <BookCover
+            isbn={book.isbn}
+            title={book.title}
+            size="L"
+            className="aspect-[2/3] w-32 shrink-0 rounded-xl ring-1 ring-foreground/10 sm:w-40"
+            sizes="160px"
+          />
+
+          <dl className="min-w-0 flex-1 divide-y divide-border text-sm">
             <DetailRow label="Forfatter">{book.author}</DetailRow>
             <DetailRow label="Utgivelsesår">
               <span className="tabular-nums">{book.year}</span>

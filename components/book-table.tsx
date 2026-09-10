@@ -9,6 +9,7 @@ import {
 	MoreVerticalIcon,
 } from "@hugeicons/core-free-icons";
 
+import { BookCover } from "@/components/book-cover";
 import {
 	ColumnHead,
 	IDENTITY_CELL,
@@ -87,7 +88,17 @@ export function BookTable({
 									className={`py-3 pl-(--card-spacing) ${IDENTITY_CELL}`}
 								>
 									<RecordCell
-										icon={book.available > 0 ? Book02Icon : BookOpen01Icon}
+										media={
+											<BookCover
+												isbn={book.isbn}
+												title={book.title}
+												className="size-9 shrink-0 rounded-xl"
+												fallbackIcon={
+													book.available > 0 ? Book02Icon : BookOpen01Icon
+												}
+												sizes="36px"
+											/>
+										}
 										name={book.title}
 										href={`/boker/${book.id}`}
 									>

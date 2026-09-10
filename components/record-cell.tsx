@@ -53,19 +53,27 @@ export function ColumnHead({
  */
 export function RecordCell({
   icon,
+  media,
   name,
   href,
   children,
 }: {
   /** Omit for a secondary column — the tile belongs to the identity column. */
   icon?: IconSvgElement;
+  /**
+   * Takes the tile's place when the record has a picture of its own — a book
+   * cover, say. The caller sizes it to match: `size-9 rounded-xl`, so a row
+   * with a cover and a row without line up down the column.
+   */
+  media?: ReactNode;
   name: string;
   href?: string;
   children?: ReactNode;
 }) {
   return (
     <div className="flex items-center gap-3">
-      {icon ? (
+      {media ?? null}
+      {!media && icon ? (
         <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-muted">
           <HugeiconsIcon
             icon={icon}
