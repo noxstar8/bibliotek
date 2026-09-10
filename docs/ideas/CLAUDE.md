@@ -9,15 +9,16 @@ gang den tas opp, blir ikke tatt opp.
 
 ## Områder
 
-| Fil | Handler om | Status |
-| --- | --- | --- |
+| Fil                                    | Handler om                         | Status        |
+| -------------------------------------- | ---------------------------------- | ------------- |
 | [`borrower-card.md`](borrower-card.md) | Lånekortet — `/admin/brukere/[id]` | 1 av 10 gjort |
-| [`book-page.md`](book-page.md) | Bokdetaljsiden — `/boker/[id]` | 0 av 1 gjort |
+| [`book-page.md`](book-page.md)         | Bokdetaljsiden — `/boker/[id]`     | 0 av 1 gjort  |
+| [`home-page.md`](home-page.md)         | Forsiden — `/`                     | 0 av 11 gjort |
 
 ## Slik bruker du dem
 
 1. Finn området i tabellen over.
-2. Les den korte begrunnelsen for ideen — den sier *hvorfor* den er verdt noe.
+2. Les den korte begrunnelsen for ideen — den sier _hvorfor_ den er verdt noe.
 3. Kopier prompten under den inn i Claude Code.
 4. Kryss av i statuskolonnen i den fila når den er bygget.
 
