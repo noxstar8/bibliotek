@@ -18,6 +18,15 @@ Vitest only picks up `lib/**/*.test.ts` (node environment, `@` aliased to the
 repo root). Run one file with `npx vitest run lib/fees.test.ts`, one case with
 `npx vitest run -t "navnet på testen"`.
 
+**Do not run `npm run build` on your own.** Building after each change costs
+time the developer did not ask for, and `next dev` already reports type and
+compile errors while they work. Build only when explicitly asked to — otherwise
+say that a build is worth running and leave it to them. The same goes for
+starting `npm run dev`: assume a dev server is already running rather than
+starting another one.
+
+`npm run lint` and `npm run test` are quick and stay part of finishing a change.
+
 # Architecture
 
 A Next.js App Router demo of a small library's lending system. No database, no
